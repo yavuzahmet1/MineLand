@@ -1,0 +1,90 @@
+import java.util.Random;
+import java.util.Scanner;
+
+public class MineLand {
+    int rowNumber = 3, colNumber = 3, size;
+    int[][] map;
+    int[][] board;//kullanıcının oynayacağı tarla
+    boolean game = true;
+
+    Random random = new Random();
+    Scanner scanner = new Scanner(System.in);
+
+    public MineLand(int rowNumber, int colNumber) {
+        this.rowNumber = rowNumber;
+        this.colNumber = colNumber;
+        this.map = new int[rowNumber][colNumber];
+        this.board = new int[rowNumber][colNumber];
+        this.size = rowNumber * colNumber;
+
+    }
+
+    public void run() {
+        int userEnteredRow, userEnteredCol,success=0;
+        prepareGame();
+        printMap(map);
+        System.out.println("Oyun başladı!!!");
+        while (game) { //oyun true olduğu sürece çalışacak
+            printMap(board);
+            System.out.println("Satır sayısı\t: ");//kullanıcında satır ve sütün sayıs alınır
+            userEnteredRow = scanner.nextInt();
+            System.out.println("Sütun sayısı\t: ");
+            userEnteredCol = scanner.nextInt();
+            if (map[userEnteredRow][userEnteredCol] != -1) {
+                checkMine(userEnteredRow, userEnteredCol);
+                success++;
+                if (success==(size-(size/4))){
+                    System.out.println("OYUNU KAZANDINIZ!!!");
+                }
+            } else {
+                game = false;
+                System.out.println("GAME OVER!!!");
+            }
+
+        }
+    }
+
+    public void prepareGame() {//mayın tarlasına mayınları döşüyoruz.
+        int randomRow, randomCol, count = 0;//rastgele oluşturacağımız mayınlar
+        while (count != size / 4) {
+            randomRow = random.nextInt(rowNumber);
+            randomCol = random.nextInt(colNumber);
+            if (map[randomRow][randomCol] != -1) {//Rastgele bir sayı üretmiştik aynı hücreye -1 değerini yazdırarak
+                map[randomRow][randomCol] = -1;   //tekrar aynı hücreye sayı üretmenin önüne geçmiş olduk.
+                count++;
+            }
+        }
+
+    }
+    public void printMap(int[][] array) {
+        for (int i = 0; i < array.length; i++) {
+            for (int j = 0; j < array[i].length; j++) {
+                if (array[i][j] >= 0)
+                    System.out.print(" ");
+                System.out.print(array[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    public void checkMine(int r, int c) {
+        if (board[r][c] == 0) {//boardımın içi sıfır olsun ki sorgulama yapabileyim
+            if ((c<colNumber-1)&&(map[r][c + 1] == -1)) {// bu yüzden gizli map'in içine girebilecek mayın durumunu kontrol edebileceğim.
+                board[r][c]++;
+            }
+            if ((r<rowNumber-1)&&(map[r + 1][c] == -1)) {
+                board[r][c]++;
+            }
+            if ((r>0)&&(map[r - 1][c] == -1)) {
+                board[r][c]++;
+            }
+            if ((c>0)&&(map[r][c - 1] == -1)) {
+                board[r][c]++;
+            }
+            if (board[r][c]==0){
+                board[r][c]=-2;
+            }
+        }
+
+    }
+}
